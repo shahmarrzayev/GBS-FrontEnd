@@ -1,35 +1,40 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ProductCard from './productCard/ProductCard'
-import { productsData } from '../../MyDatas/MyDatas'
 import ProductFilter from './productFilter/ProductFilter'
-import { useState, useMemo } from 'react'
-import { categoryData } from '../../MyDatas/MyDatas'
+import { getCategories, getProducts, getProductsPage } from '../../api'
+import { useApi } from '../../hooks/useApi'
 
 const Product = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null)
 
-  const filteredProducts = useMemo(() => {
-    let result = productsData
-    if (selectedCategoryId) {
-      result = result.filter(p => p.category === selectedCategoryId)
-    }
-    if (selectedSubcategoryId) {
-      result = result.filter(p => p.subcategory === selectedSubcategoryId)
-    }
-    return result
-  }, [selectedCategoryId, selectedSubcategoryId])
+  const { data: page } = useApi((options) => getProductsPage(options), [])
+  const { data: categories } = useApi((options) => getCategories(options), [])
+
+  // Filtering happens server-side, so changing a filter refetches.
+  const { data: products, loading, error } = useApi(
+    (options) =>
+      getProducts(
+        {
+          categoryId: selectedCategoryId,
+          subcategoryId: selectedSubcategoryId,
+        },
+        options
+      ),
+    [selectedCategoryId, selectedSubcategoryId]
+  )
 
   return (
   <main>
     <ProductFilter
-      categories={categoryData}
+      content={page}
+      categories={categories || []}
       selectedCategoryId={selectedCategoryId}
       selectedSubcategoryId={selectedSubcategoryId}
       onCategoryChange={setSelectedCategoryId}
       onSubcategoryChange={setSelectedSubcategoryId}
     />
-    <ProductCard data={filteredProducts}/>
+    <ProductCard data={products} loading={loading} error={error}/>
   </main>
   )
 }

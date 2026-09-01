@@ -6,6 +6,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination,Autoplay } from 'swiper/modules';
 const SliderComponent = ({data,title}) => {
+  if (!data?.length) return null
+
   return (
    <section id='sliderComponent'>
     
@@ -46,8 +48,8 @@ const SliderComponent = ({data,title}) => {
       >
         {data.map((item)=>(
 
-        <SwiperSlide>
-            <img src={item.image} alt="" />
+        <SwiperSlide key={item.id}>
+            <img src={item.image} alt={item.name || ""} />
         </SwiperSlide>
         ))}
 

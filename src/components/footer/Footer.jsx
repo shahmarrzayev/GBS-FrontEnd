@@ -1,6 +1,6 @@
 import React from 'react';
 import './Footer.scss';
-import siteLogo from '../../assets/gbsLogo.png'
+import fallbackLogo from '../../assets/gbsLogo.png'
 import { NavLink } from 'react-router-dom';
 import LocationIcon from '../../assets/icons/LocationIcon';
 import EmailIcon from '../../assets/icons/EmailIcon';
@@ -9,16 +9,27 @@ import InstagramIcon from '../../assets/icons/InstagramIcon';
 import FaceBookIcon from '../../assets/icons/FacebookIcon';
 import WhatsappIcon from '../../assets/icons/WhatsappIcon';
 import LinkedinIcon from '../../assets/icons/LinkedinIcon';
+import { useGlobal } from '../../context/globalContext';
+
+const SOCIAL_ICONS = {
+  instagram: InstagramIcon,
+  facebook: FaceBookIcon,
+  whatsapp: WhatsappIcon,
+  linkedin: LinkedinIcon,
+};
+
 const Footer = () => {
+  const { global } = useGlobal();
+
   return (
    <footer>
     <div className="container py-4">
       <div className="row  justify-content-between">
         <div className="col-lg-4">
           <div className="footerLogo">
-            <img src={siteLogo} alt="" />
+            <img src={global?.logo || fallbackLogo} alt={global?.siteName || ''} />
 
-            <p>With over 18 years of experience in the electrical industry, GBS delivers trusted power distribution solutions built on international standards and precision engineering.</p>
+            <p>{global?.footerDescription}</p>
           </div>
         </div>
         <div className="col-lg-2">
@@ -44,35 +55,49 @@ const Footer = () => {
         <div className="col-lg-4">
             <div className="footerInfo">
               <div className="footerText">
-                <p>
-                  <LocationIcon/>
-                  <span>Zira settlement, Baku, Azerbaijan</span>
-                </p>
-                <p>
-                  <EmailIcon/>
-                  <span>info@gbs.az </span>
-                </p>
-                <p>
-                  <PhoneIcon/>
-                  <span>+994 12 123 45 67 </span>
-                </p>
+                {global?.address && (
+                  <p>
+                    <LocationIcon/>
+                    <span>{global.address}</span>
+                  </p>
+                )}
+                {global?.email && (
+                  <p>
+                    <EmailIcon/>
+                    <a href={`mailto:${global.email}`}>
+                      <span>{global.email}</span>
+                    </a>
+                  </p>
+                )}
+                {global?.phoneNumber && (
+                  <p>
+                    <PhoneIcon/>
+                    <a href={`tel:${global.phoneNumber.replace(/\s+/g, '')}`}>
+                      <span>{global.phoneNumber}</span>
+                    </a>
+                  </p>
+                )}
               </div>
 
               <div className="footerSocial">
                 <h3>Socials</h3>
                 <div className="iconBox">
-                 <a className="icon">
-                    <InstagramIcon/>
-                 </a>
-                 <a className="icon">
-                    <FaceBookIcon/>
-                 </a>
-                 <a className="icon">
-                    <WhatsappIcon/>
-                 </a>
-                 <a className="icon">
-                    <LinkedinIcon/>
-                 </a>
+                 {global?.socialLinks?.map(({ platform, url }) => {
+                   const Icon = SOCIAL_ICONS[platform];
+
+                   if (!Icon) return null;
+                   return (
+                     <a
+                       key={platform}
+                       className="icon"
+                       href={url || '#'}
+                       target="_blank"
+                       rel="noreferrer"
+                     >
+                        <Icon/>
+                     </a>
+                   );
+                 })}
                 </div>
               </div>
             </div>

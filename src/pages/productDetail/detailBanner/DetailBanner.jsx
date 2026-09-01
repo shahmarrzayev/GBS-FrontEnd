@@ -6,7 +6,14 @@ import { Pagination } from "swiper/modules";
 import { NavLink } from "react-router-dom";
 
 const DetailBanner = ({ data }) => {
-  // Əgər məhsul tapılmasa, boş səhifə göstər
+  // Hooks run before the "not found" branch so their order stays stable while
+  // the product is still loading.
+  const [activeImage, setActiveImage] = useState(data?.image);
+
+  useEffect(() => {
+    setActiveImage(data?.image);
+  }, [data]);
+
   if (!data) {
     return (
       <section id="detailBanner">
@@ -16,11 +23,7 @@ const DetailBanner = ({ data }) => {
       </section>
     );
   }
-  const [activeImage, setActiveImage] = useState(data.image);
 
-  useEffect(() => {
-    setActiveImage(data.image); // ✅ məhsul dəyişəndə əsas şəkil reset olsun
-  }, [data]);
   return (
     <section id="detailBanner">
       <div className="container">
@@ -29,16 +32,12 @@ const DetailBanner = ({ data }) => {
             <div className="productDetailedContents">
               <h2>{data?.title}</h2>
               <p>
-                SIVACON 8PT technology panels, distinguished by their
-                versatility and reliability for electrical power distribution,
-                are manufactured according to Siemens specifications. They are
-                distinguished by their long-term operation, modular construction
-                and safety standards.
+                {data?.bannerDescription}
               </p>
 
               <ul>
                 {data?.features?.map((item, i) => (
-                  <li>
+                  <li key={i}>
                     <SucsessGrayIcon />
                     {item}
                   </li>
@@ -54,7 +53,7 @@ const DetailBanner = ({ data }) => {
             <div className="detailSlider">
               <div className="mainSwiper">
                 <div className="sliderImage">
-                  <img src={activeImage} alt="" className="mainImage" />
+                  <img src={activeImage} alt={data?.title} className="mainImage" />
                 </div>
               </div>
               <Swiper

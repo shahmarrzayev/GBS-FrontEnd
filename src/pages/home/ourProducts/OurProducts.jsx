@@ -6,26 +6,33 @@ import "swiper/css";
 import "swiper/css/pagination";
 // import required modules
 import { Navigation, Pagination } from "swiper/modules";
-import { productsData } from "../../../MyDatas/MyDatas";
 import { NavLink } from "react-router-dom";
-const OurProducts = () => {
+import { getProducts } from "../../../api";
+import { useApi } from "../../../hooks/useApi";
+import DataState from "../../../components/dataState/DataState";
+
+const OurProducts = ({ content }) => {
+  const { data: products, loading, error } = useApi(
+    (options) => getProducts({ limit: 6 }, options),
+    []
+  );
+
   return (
     <section id="ourProducts">
       <div className="container">
         <div className="row">
           <div className="col-7">
             <div className="sectionHeader">
-              <h2>Our Products</h2>
+              <h2>{content?.productsSectionTitle}</h2>
               <p>
-                Discover our wide range of certified and reliable power
-                distribution solutions. Each system is custom-built to meet your
-                project’s unique requirements.
+                {content?.productsSectionDescription}
               </p>
             </div>
           </div>
         </div>
          <button className="navigationBtn prevBtn">←</button>
           <button className="navigationBtn nextBtn">→</button>
+        <DataState loading={loading} error={error} isEmpty={!products?.length}>
         <Swiper
           slidesPerView={1}
           spaceBetween={10}
@@ -33,7 +40,7 @@ const OurProducts = () => {
             clickable: true,
           }}
                    navigation={{
-            nextEl: ".nextBtn", 
+            nextEl: ".nextBtn",
             prevEl: ".prevBtn",
           }}
           breakpoints={{
@@ -54,12 +61,12 @@ const OurProducts = () => {
           className="productsSwiper"
           id="slider_tab"
         >
-          {productsData?.slice(0,6).map((item) => (
+          {products?.map((item) => (
             <SwiperSlide key={item.id}>
-              <NavLink to={`/product/${item?.id}`}>
+              <NavLink to={`/product/${item?.slug}`}>
                 <div className="productsCard">
                   <div className="cardImage">
-                    <img src={item?.image} alt="" />
+                    <img src={item?.image} alt={item?.title} />
                   </div>
                   <div className="cardContent">
                     <h4>{item?.title}</h4>
@@ -70,6 +77,7 @@ const OurProducts = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+        </DataState>
       </div>
     </section>
   );

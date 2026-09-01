@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./Header.scss";
-import siteLogo from "../../assets/gbsLogo.png";
+import fallbackLogo from "../../assets/gbsLogo.png";
 import { NavLink } from "react-router-dom";
+import { useGlobal } from "../../context/globalContext";
 const Header = () => {
+  const { global } = useGlobal();
      const [scrollNavbar, setScrollNavbar] = useState(false);
      useEffect(()=>{
         const handleScroll = () => { 
@@ -20,7 +22,7 @@ const Header = () => {
         <div className="row align-items-center justify-content-between">
           <div className="col-2">
             <div className="logo">
-              <img src={siteLogo} alt="" />
+              <img src={global?.logo || fallbackLogo} alt={global?.siteName || ""} />
             </div>
           </div>
           <div className="col-7">
@@ -53,7 +55,11 @@ const Header = () => {
           </div>
           <div className="col-2">
             <div className="navInfo">
-              <span>+123 456 78 89</span>
+              {global?.phoneNumber && (
+                <a href={`tel:${global.phoneNumber.replace(/\s+/g, "")}`}>
+                  <span>{global.phoneNumber}</span>
+                </a>
+              )}
             </div>
           </div>
         </div>

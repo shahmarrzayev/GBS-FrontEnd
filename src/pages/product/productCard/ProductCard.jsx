@@ -1,16 +1,22 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import "./ProductCard.scss";
+import DataState from "../../../components/dataState/DataState";
 
-const ProductCard = ({ data }) => {
+const ProductCard = ({ data, loading, error }) => {
   return (
     <section id="productCard">
       <div className="container py-3">
-        {data && data.length > 0 ? (
+        <DataState
+          loading={loading}
+          error={error}
+          isEmpty={!data?.length}
+          emptyText="Heç nə tapılmadı"
+        >
           <div className="row">
-            {data.slice(0, 12).map((item) => (
+            {data?.slice(0, 12).map((item) => (
               <div className="col-lg-4" key={item.id}>
-                <NavLink to={`/product/${item.id}`}>
+                <NavLink to={`/product/${item.slug}`}>
                   <div className="productsCard">
                     <div className="cardImage">
                       <img src={item.image} alt={item.title} />
@@ -24,9 +30,7 @@ const ProductCard = ({ data }) => {
               </div>
             ))}
           </div>
-        ) : (
-          <p className="text-center">Heç nə tapılmadı</p>
-        )}
+        </DataState>
       </div>
     </section>
   );

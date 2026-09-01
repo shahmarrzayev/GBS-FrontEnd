@@ -1,8 +1,9 @@
 import React from "react";
 import "./ProductFilter.scss";
-import prBanner from "../../../assets/productBanner.jpg";
+import fallbackBanner from "../../../assets/productBanner.jpg";
 import { Swiper, SwiperSlide } from "swiper/react";
 const ProductFilter = ({
+  content = null,
   categories = [],
   selectedCategoryId = null,
   selectedSubcategoryId = null,
@@ -16,10 +17,10 @@ const ProductFilter = ({
     <section id="productFilter">
       <div
         className="productBanner"
-        style={{ backgroundImage: `url(${prBanner})` }}
+        style={{ backgroundImage: `url(${content?.bannerImage || fallbackBanner})` }}
       >
         <div className="overlay">
-          <h1>Products</h1>
+          <h1>{content?.title}</h1>
         </div>
       </div>
       <div className="container">

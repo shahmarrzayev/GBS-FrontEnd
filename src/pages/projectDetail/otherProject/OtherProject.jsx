@@ -8,11 +8,11 @@ import "swiper/css";
 import "swiper/css/pagination";
 // import required modules
 import { Pagination } from "swiper/modules";
-import { projectData } from "../../../MyDatas/MyDatas";
 import { NavLink } from "react-router-dom";
-const OtherProject = () => {
+const OtherProject = ({ data }) => {
   return (
     <section id="otherProject">
+      {data?.length > 0 && (
       <div className="container-fluid p-0">
         <Swiper
           slidesPerView={1}
@@ -38,8 +38,8 @@ const OtherProject = () => {
           modules={[]}
           className="mySwiper"
         >
-          {projectData.map((item) => (
-            <SwiperSlide>
+          {data.map((item) => (
+            <SwiperSlide key={item.id}>
               <div
                 className="otherProjectCard"
                 style={{ backgroundImage: `url(${item.image})` }}
@@ -53,7 +53,7 @@ const OtherProject = () => {
                   <div className="cardButtons">
                     <p>{item.description}</p>
 
-                    <NavLink to={`/project/${item.id}`}>
+                    <NavLink to={`/project/${item.slug}`}>
                       <span className="icon">→</span>
                       <span className="text">About Project</span>
                     </NavLink>
@@ -65,6 +65,7 @@ const OtherProject = () => {
           ))}
         </Swiper>
       </div>
+      )}
       <div className="container py-4">
         <div className="row align-items-center">
           <div className="col-lg-7 col-sm-12">

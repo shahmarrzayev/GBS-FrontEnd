@@ -4,6 +4,8 @@ import { Navigation, Pagination } from "swiper/modules";
 import { NavLink } from "react-router-dom";
 import "./DetailOtherProduct.scss"
 const DetailOtherProduct = ({ data }) => {
+  if (!data?.length) return null;
+
   return (
     <section id="otherProducts">
       <div className="container my-5">
@@ -38,7 +40,7 @@ const DetailOtherProduct = ({ data }) => {
         >
           {data.map((item) => (
             <SwiperSlide key={item.id}>
-              <NavLink to={`/product/${item.id}`}>
+              <NavLink to={`/product/${item.slug}`}>
                 <div className="productsCard">
                   <div className="cardImage">
                     <img src={item.image} alt={item.title} />

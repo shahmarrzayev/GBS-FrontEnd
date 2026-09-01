@@ -1,17 +1,29 @@
-import React, { useState } from "react";
-import { overviewData } from "../../../MyDatas/MyDatas";
+import React, { useEffect, useState } from "react";
 import Fancybox from "../../../components/fancybox/Fancybox";
 import playIcon from "../../../assets/icons/playIcon.png";
 import "./Overview.scss";
 import { NavLink } from "react-router-dom";
-const Overview = () => {
-  const [openId, setOpenId] = useState(overviewData[0].id);
+import { getOverviews } from "../../../api";
+import { useApi } from "../../../hooks/useApi";
+import DataState from "../../../components/dataState/DataState";
+
+const Overview = ({ content }) => {
+  const { data: overviews, loading, error } = useApi(
+    (options) => getOverviews(options),
+    []
+  );
+  const [openId, setOpenId] = useState(null);
+
+  // Open the first accordion item as soon as the data arrives.
+  useEffect(() => {
+    setOpenId(overviews?.[0]?.id ?? null);
+  }, [overviews]);
 
   const toggleAccordion = (id) => {
     setOpenId((prev) => (prev === id ? null : id));
   };
 
-  const currentItem = overviewData.find((item) => item.id === openId);
+  const activeItem = overviews?.find((item) => item.id === openId);
 
   return (
     <section id="overview">
@@ -19,17 +31,22 @@ const Overview = () => {
          <div className="row">
           <div className="col-7">
             <div className="sectionHeader">
-          <h2>Product Overview</h2>
+          <h2>{content?.overviewTitle}</h2>
           <p>
-            Discover our wide range of certified and reliable power distribution solutions. Each system is custom-built to meet your project’s unique requirements.
+            {content?.overviewDescription}
           </p>
         </div>
           </div>
         </div>
+        <DataState
+          loading={loading}
+          error={error}
+          isEmpty={!overviews?.length}
+        >
         <div className="row">
           <div className="col-lg-5">
             <div className="accardionButtons">
-              {overviewData?.map((item) => (
+              {overviews?.map((item) => (
                 <div
                   key={item.id}
                   className={`accordionItem ${
@@ -39,10 +56,9 @@ const Overview = () => {
                 >
                   <div
                     className="accardionHeader"
-                    
+
                   >
                     <span>
-                      {/* <img className="miniLogo" src={playIcon} alt="" /> */}
                       {item.title}
                     </span>
                   </div>
@@ -65,18 +81,19 @@ const Overview = () => {
             <div className="acardionVideo">
                 <div className="videoContent">
                     <div className="texts">
-                        <h3>Lorem</h3>
-                        <p>It is a long established fact that a reader will be distracted by the readable content</p>
+                        <h3>{activeItem?.title}</h3>
+                        <p>{activeItem?.description}</p>
                     </div>
                      <NavLink className="viewButton"  to="/contact">
                               <span className="icon">→</span>
                               <span className="text">View</span>
                             </NavLink>
                 </div>
+              {activeItem?.videoSrc && (
               <div className="playIcon">
                 <Fancybox>
                   <a
-                    href="https://www.youtube.com/watch?v=C124rASVHLw"
+                    href={activeItem.videoSrc}
                     data-fancybox="gallery"
                     className="videoImg imageSize-700"
                   >
@@ -86,9 +103,11 @@ const Overview = () => {
                   </a>
                 </Fancybox>
               </div>
+              )}
             </div>
           </div>
         </div>
+        </DataState>
       </div>
     </section>
   );

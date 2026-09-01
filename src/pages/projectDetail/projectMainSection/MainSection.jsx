@@ -1,31 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import './MainSection.scss'
-import { useParams } from 'react-router-dom';
-import { projectData } from '../../../MyDatas/MyDatas';
-const MainSection = () => {
-  const {slug} = useParams();
 
-  const detailedProject = projectData.find(item => item.id === slug);
-  const [activeImage, setActiveImage] = useState(detailedProject?.image);
-       useEffect(()=>{
-      setActiveImage(detailedProject?.image)
-  },[detailedProject])
+const MainSection = ({ data }) => {
+  const [activeImage, setActiveImage] = useState(data?.image);
+
+  useEffect(()=>{
+      setActiveImage(data?.image)
+  },[data])
+
+  if (!data) {
+    return (
+      <section id='mainSection'>
+        <div className="container">
+          <h2>Project not found</h2>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section id='mainSection'>
       <div className="bannerImage">
-        <div className="sliderImage">   
-                  <img src={activeImage} alt="" className="mainImage" />
+        <div className="sliderImage">
+                  <img src={activeImage} alt={data?.title} className="mainImage" />
 
                   <div className="sliderOtherImages">
                       <div
                         className={`otherImage ${
-                          detailedProject?.image === activeImage ? "active" : ""
+                          data?.image === activeImage ? "active" : ""
                         }`}
-                        onClick={() => setActiveImage(detailedProject?.image)}
+                        onClick={() => setActiveImage(data?.image)}
                       >
-                        <img src={detailedProject?.image} alt="" />
+                        <img src={data?.image} alt={data?.title} />
                       </div>
-                    {detailedProject?.images.map((img, index) => (
+                    {data?.images?.map((img, index) => (
                       <div
                         key={index}
                         className={`otherImage ${
@@ -33,25 +41,25 @@ const MainSection = () => {
                         }`}
                         onClick={() => setActiveImage(img)}
                       >
-                        <img src={img} alt="" />
+                        <img src={img} alt={data?.title} />
                       </div>
                     ))}
                   </div>
                   <div className="overlay">
                   </div>
                   <div className="sliderContent">
-                    <h3>{detailedProject?.title}</h3>
-                    <p>{detailedProject?.description}</p>
+                    <h3>{data?.title}</h3>
+                    <p>{data?.description}</p>
                   </div>
                 </div>
       </div>
      <div className="container mt-5">
        <div className="projectDescription">
         <h3>
-          {detailedProject?.title}
+          {data?.title}
         </h3>
         <p>
-          {detailedProject?.description}
+          {data?.description}
         </p>
       </div>
      </div>
