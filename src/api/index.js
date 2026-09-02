@@ -14,6 +14,11 @@ import {
 // Seed order is the display order everywhere, so sort by creation.
 const BY_CREATION = "createdAt:asc";
 
+// Strapi pages listings at 25 by default (see the API's defaultLimit), which
+// silently truncates the catalogue. Listings want everything, so they ask for
+// the API's maxLimit unless the caller wants a shorter carousel.
+const MAX_PAGE_SIZE = 100;
+
 const mapList = (normalize) => (list) => (list ?? []).map(normalize);
 
 // ---------------------------------------------------------------- single types
@@ -69,7 +74,7 @@ export const getProducts = async (
         "filters[category][documentId][$eq]": categoryId,
         "filters[subcategory][documentId][$eq]": subcategoryId,
         "filters[slug][$ne]": excludeSlug,
-        "pagination[pageSize]": limit,
+        "pagination[pageSize]": limit ?? MAX_PAGE_SIZE,
         sort: BY_CREATION,
       })}`,
       options
@@ -97,7 +102,7 @@ export const getProjects = async ({ excludeSlug, limit } = {}, options) =>
       `/projects${query({
         "populate[image]": "true",
         "filters[slug][$ne]": excludeSlug,
-        "pagination[pageSize]": limit,
+        "pagination[pageSize]": limit ?? MAX_PAGE_SIZE,
         sort: BY_CREATION,
       })}`,
       options
