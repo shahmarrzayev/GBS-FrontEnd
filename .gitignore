@@ -16,6 +16,9 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# VITE_ vars end up in the public bundle, so the production API URL is not a
+# secret and belongs in the repo — otherwise a fresh checkout builds against localhost.
+!.env.production
 
 # Editor directories and files
 .vscode/*
